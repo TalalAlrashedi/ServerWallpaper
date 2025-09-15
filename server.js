@@ -1,0 +1,144 @@
+import express from "express";
+import cors from "cors";
+import fileUpload from "express-fileupload";
+import path from "path";
+import fs from "fs";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload());
+
+// serve static folders
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/wallpapers", express.static(path.join(process.cwd(), "wallpapers")));
+
+const wallpapers = [
+  {
+    id: 7,
+    src: "/wallpapers/MBS.JPG",
+    name: "الامير محمد بن سلمان",
+    mockup: "WatchWhite",
+  },
+  {
+    id: 10,
+    src: "/wallpapers/Saudia.JPG",
+    name: "سعودية",
+    mockup: "WatchCreamy",
+  },
+  {
+    id: 11,
+    src: "/wallpapers/SaudiMap.JPG",
+    name: "خريطة السعودية",
+    mockup: "WatchWhite",
+  },
+  { id: 13, src: "/wallpapers/Nebula.JPG", name: "سديم", mockup: "WatchBlue" },
+  {
+    id: 1,
+    src: "/wallpapers/moon.JPG",
+    name: "سطح القمر",
+    mockup: "WatchWhite",
+  },
+  {
+    id: 2,
+    src: "/wallpapers/earth.JPG",
+    name: "منظر الأرض",
+    mockup: "WatchBlue",
+  },
+  {
+    id: 8,
+    src: "/wallpapers/MBSGold.JPG",
+    name: "الامير محمد بن سلمان",
+    mockup: "WatchCreamy",
+  },
+  {
+    id: 3,
+    src: "/wallpapers/sea.JPG",
+    name: "أمواج المحيط",
+    mockup: "WatchWhite",
+  },
+  { id: 4, src: "/wallpapers/person.JPG", name: "شخص", mockup: "WatchGold" },
+  {
+    id: 5,
+    src: "/wallpapers/stars.JPG",
+    name: "حقل النجوم",
+    mockup: "WatchGold",
+  },
+  {
+    id: 6,
+    src: "/wallpapers/SaudiFlagPassport.JPG",
+    name: "علم السعودية",
+    mockup: "WatchGrey",
+  },
+  {
+    id: 9,
+    src: "/wallpapers/Planets.JPG",
+    name: "الكواكب والشمس",
+    mockup: "WatchBlue",
+  },
+  {
+    id: 12,
+    src: "/wallpapers/SaudiFlagTwoColors.JPG",
+    name: "شعار المملكة",
+    mockup: "WatchGrey",
+  },
+
+]
+
+// --- رفع صورة ---
+app.post("/upload", (req, res) => {
+  if (!req.files || !req.files.photo) return res.status(400).send("No file uploaded.");
+
+  const photo = req.files.photo;
+  const filename = `صورة_${Date.now()}${path.extname(photo.name)}`;
+
+  photo.mv(`uploads/${filename}`, (err) => {
+    if (err) return res.status(500).send(err);
+    const url = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+    res.json({ filename, url });
+  });
+});
+
+// --- حذف صورة ---
+app.delete("/delete/:filename", (req, res) => {
+  const filePath = path.join(process.cwd(), "uploads", req.params.filename);
+  if (!fs.existsSync(filePath)) return res.status(404).send("File not found");
+
+  fs.unlink(filePath, (err) => {
+    if (err) return res.status(500).send(err);
+    res.send({ message: "تم حذف الصورة بنجاح" });
+  });
+});
+
+// --- عرض جميع الصور ---
+app.get("/all-wallpapers", (req, res) => {
+  const host = `${req.protocol}://${req.get("host")}`;
+
+  // الصور الثابتة مع ترقيم
+  const staticWallpapers = wallpapers.map((wp, i) => ({
+    ...wp,
+    id: wp.id,
+    src: `${host}${wp.src}`
+  }));
+
+  // الصور المرفوعة
+  fs.readdir(path.join(process.cwd(), "uploads"), (err, files) => {
+    if (err) return res.status(500).json({ error: "Unable to read uploads folder" });
+
+    const uploadedWallpapers = files.map((file, index) => ({
+      id: 1000 + index,
+      src: `${host}/uploads/${file}`,
+      name: `صورة ${staticWallpapers.length + index + 1}`,
+      mockup: "WatchWhite",
+    }));
+
+    res.json([...staticWallpapers, ...uploadedWallpapers]);
+  });
+});
+
+// --- اختبار السيرفر ---
+app.get("/", (req, res) => res.send("✅ Server is running"));
+
+// --- تشغيل السيرفر ---
+const PORT = 1000;
+app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Server running on http://localhost:${PORT}`));
