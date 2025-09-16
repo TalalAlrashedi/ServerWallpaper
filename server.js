@@ -24,19 +24,19 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/wallpapers", express.static(path.join(process.cwd(), "wallpapers")));
 
 const wallpapers = [
-  { id: 7, src: "/wallpapers/MBS.JPG", name: "الامير محمد بن سلمان", mockup: "WatchWhite" },
-  { id: 10, src: "/wallpapers/Saudia.JPG", name: "سعودية", mockup: "WatchCreamy" },
-  { id: 11, src: "/wallpapers/SaudiMap.JPG", name: "خريطة السعودية", mockup: "WatchWhite" },
-  { id: 13, src: "/wallpapers/Nebula.JPG", name: "سديم", mockup: "WatchBlue" },
-  { id: 1, src: "/wallpapers/moon.JPG", name: "سطح القمر", mockup: "WatchWhite" },
-  { id: 2, src: "/wallpapers/earth.JPG", name: "منظر الأرض", mockup: "WatchBlue" },
-  { id: 8, src: "/wallpapers/MBSGold.JPG", name: "الامير محمد بن سلمان", mockup: "WatchCreamy" },
-  { id: 3, src: "/wallpapers/sea.JPG", name: "أمواج المحيط", mockup: "WatchWhite" },
-  { id: 4, src: "/wallpapers/person.JPG", name: "شخص", mockup: "WatchGold" },
-  { id: 5, src: "/wallpapers/stars.JPG", name: "حقل النجوم", mockup: "WatchGold" },
-  { id: 6, src: "/wallpapers/SaudiFlagPassport.JPG", name: "علم السعودية", mockup: "WatchGrey" },
-  { id: 9, src: "/wallpapers/Planets.JPG", name: "الكواكب والشمس", mockup: "WatchBlue" },
-  { id: 12, src: "/wallpapers/SaudiFlagTwoColors.JPG", name: "شعار المملكة", mockup: "WatchGrey" },
+  { id: 7, src: "/uploads/MBS.JPG", name: "الامير محمد بن سلمان", mockup: "WatchWhite" },
+  { id: 10, src: "/uploads/Saudia.JPG", name: "سعودية", mockup: "WatchCreamy" },
+  { id: 11, src: "/uploads/SaudiMap.JPG", name: "خريطة السعودية", mockup: "WatchWhite" },
+  { id: 13, src: "/uploads/Nebula.JPG", name: "سديم", mockup: "WatchBlue" },
+  { id: 1, src: "/uploads/moon.JPG", name: "سطح القمر", mockup: "WatchWhite" },
+  { id: 2, src: "/uploads/earth.JPG", name: "منظر الأرض", mockup: "WatchBlue" },
+  { id: 8, src: "/uploads/MBSGold.JPG", name: "الامير محمد بن سلمان", mockup: "WatchCreamy" },
+  { id: 3, src: "/uploads/sea.JPG", name: "أمواج المحيط", mockup: "WatchWhite" },
+  { id: 4, src: "/uploads/person.JPG", name: "شخص", mockup: "WatchGold" },
+  { id: 5, src: "/uploads/stars.JPG", name: "حقل النجوم", mockup: "WatchGold" },
+  { id: 6, src: "/uploads/SaudiFlagPassport.JPG", name: "علم السعودية", mockup: "WatchGrey" },
+  { id: 9, src: "/uploads/Planets.JPG", name: "الكواكب والشمس", mockup: "WatchBlue" },
+  { id: 12, src: "/uploads/SaudiFlagTwoColors.JPG", name: "شعار المملكة", mockup: "WatchGrey" },
 ];
 
 // --- رفع صورة ---
