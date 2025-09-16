@@ -4,6 +4,8 @@ import fileUpload from "express-fileupload";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import axios from "axios";
+import 'dotenv/config'; // هذا سيقرأ .env تلقائياً
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,16 +14,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
-
+console.log("UNSPLASH_ACCESS_KEY:", process.env.UNSPLASH_ACCESS_KEY);
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
 const wallpapersDir = path.join(process.cwd(), "wallpapers");
 if (!fs.existsSync(wallpapersDir)) fs.mkdirSync(wallpapersDir);
-
+const imageForInstallUnslash = "https://images.unsplash.com/"
 // serve static folders
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use("/wallpapers", express.static(path.join(process.cwd(), "wallpapers")));
+app.use("/uploads", express.static(uploadsDir));
+app.use("/wallpapers", express.static(wallpapersDir));
 
 const wallpapers = [
   { id: 7, src: "/uploads/MBS.JPG", name: "الامير محمد بن سلمان", mockup: "WatchWhite" },
@@ -64,17 +66,53 @@ app.delete("/delete/:filename", (req, res) => {
   });
 });
 
+// --- تحميل صورة Unsplash (يجب أن يأتي قبل /download/:filename) ---
+// تحميل صور Unsplash مباشرة
+app.get("/download/unsplash/:id", async (req, res) => {
+  const photoId = req.params.id;
+  const accessKey = process.env.UNSPLASH_ACCESS_KEY;
+
+  try {
+    const info = await axios.get(`https://api.unsplash.com/photos/${photoId}?client_id=${accessKey}`);
+    const imageUrl = info.data.urls.raw; // استخدم raw أو regular
+
+    const imageResponse = await axios.get(imageUrl, { responseType: "stream", timeout: 30000 });
+
+    res.setHeader("Content-Disposition", `attachment; filename="${photoId}.jpg"`);
+    res.setHeader("Content-Type", "image/jpeg");
+    imageResponse.data.pipe(res);
+  } catch (err) {
+    console.error("Proxy download error:", err.message);
+    res.status(500).json({ message: "Failed to download image" });
+  }
+});
+
+// --- تحميل صورة محلية ---
+app.get("/download/:filename", (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(uploadsDir, filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "File not found." });
+  }
+
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("Error downloading file:", err);
+      res.status(500).send({ message: "Failed to download file." });
+    }
+  });
+});
+
 // --- عرض جميع الصور ---
 app.get("/all-wallpapers", (req, res) => {
   const host = `${req.protocol}://${req.get("host")}`;
 
-  // الصور الثابتة
   const staticWallpapers = wallpapers.map((wp) => ({
     ...wp,
     src: `${host}${wp.src}`,
   }));
 
-  // الصور المرفوعة
   fs.readdir(uploadsDir, (err, files) => {
     if (err) return res.status(500).json({ error: "Unable to read uploads folder" });
 
@@ -86,19 +124,6 @@ app.get("/all-wallpapers", (req, res) => {
     }));
 
     res.json([...staticWallpapers, ...uploadedWallpapers]);
-  });
-});
-
-// --- تحميل صورة ---
-app.get("/download/:filename", (req, res) => {
-  const { filename } = req.params;
-  const filePath = path.join(uploadsDir, filename);
-
-  res.download(filePath, filename, (err) => {
-    if (err) {
-      console.error("Error downloading file:", err);
-      res.status(404).send({ message: "File not found." });
-    }
   });
 });
 
