@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
-console.log("UNSPLASH_ACCESS_KEY:", process.env.UNSPLASH_ACCESS_KEY);
+// console.log("UNSPLASH_ACCESS_KEY:", process.env.UNSPLASH_ACCESS_KEY);
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
