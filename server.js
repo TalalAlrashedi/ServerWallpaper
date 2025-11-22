@@ -58,7 +58,7 @@ const wallpapers = [
   {id: 30, src: "/uploads/الامير محمد بن سلمان16.JPG", name: "محمد بن سلمان ١٦", mockup: "WatchWhite" },
   {id: 31, src: "/uploads/الامير محمد بن سلمان17.JPG", name: "محمد بن سلمان ١٧", mockup: "WatchGold" },
   {id: 32, src: "/uploads/الامير محمد بن سلمان18.JPG", name: "محمد بن سلمان ١٨", mockup: "WatchGrey" },
-  {id: 33, src: "/uploads/الامير محمد بن سلمان19.JPG", name: "محمد بن سلمان ١٩", mockup: "WatchBlue" },
+  // {id: 33, src: "/uploads/الامير محمد بن سلمان19.JPG", name: "محمد بن سلمان ١٩", mockup: "WatchBlue" },
 ];
 
 // --- رفع صورة ---
